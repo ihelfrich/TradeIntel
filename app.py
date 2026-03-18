@@ -53,6 +53,7 @@ from utils.ge_counterfactual import (
 from utils.theme import (
     DARK_THEME, apply_theme, CUSTOM_CSS, WELFARE_COLORSCALE,
     SEQUENTIAL_COLORSCALE, CATEGORY_COLORS, metric_card, section_header,
+    data_badge, key_insight, stat_row,
 )
 from utils.research_pipeline import (
     run_optimal_tariff_survey, run_elasticity_sensitivity,
@@ -62,7 +63,6 @@ from utils.topo_counterfactual import (
     compare_topology_factual_vs_counterfactual,
     topological_laffer_curve,
 )
-import pydeck as pdk
 import hashlib
 
 # ── Auto-theme: wrap st.plotly_chart so every figure gets the dark theme ──
@@ -89,14 +89,14 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 # ── Sidebar navigation ──────────────────────────────────────────────────────
 st.sidebar.markdown("""
-<div style="padding: 6px 0 2px 0;">
-    <div style="font-family: 'Source Serif 4', Georgia, serif; font-size: 1.35rem;
-                font-weight: 600; color: #ffffff; letter-spacing: -0.01em; line-height: 1.2;">
+<div style="padding: 8px 0 4px 0;">
+    <div style="font-family: 'Newsreader', Georgia, serif; font-size: 1.35rem;
+                font-weight: 600; color: #1a1a2e; letter-spacing: -0.01em; line-height: 1.2;">
         Trade Network Intelligence
     </div>
-    <div style="font-family: 'Inter', sans-serif; font-size: 0.78rem; color: #7b8fa3;
-                margin-top: 3px; letter-spacing: 0.02em;">
-        Ian Helfrich, PhD — Georgia Institute of Technology
+    <div style="font-family: 'Inter', sans-serif; font-size: 0.78rem; color: #6b6b7b;
+                margin-top: 4px; letter-spacing: 0.02em;">
+        Dr. Ian Helfrich — Georgia Institute of Technology
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -123,8 +123,8 @@ _PAGES = [
     "Gravity Model Lab",
     "Network Invariants",
     "3D Network Topology",
-    # Section: Novel Research (TDA)
-    "── NOVEL RESEARCH ──",
+    # Section: Topology (TDA)
+    "── TOPOLOGY ──",
     "Topology-Counterfactual",
     "Persistent Homology",
     "Feature Explorer",
@@ -135,26 +135,26 @@ _PAGES = [
 ]
 
 _CAPTIONS = {
-    "Home": "Start here",
-    "3D Trade Globe": "Interactive flow map",
-    "Network Evolution": "20-year structural trends",
-    "Country Dependencies": "HHI & sector breakdown",
-    "US Trade Exposure": "US vulnerability analysis",
-    "Supply Chain Deep Dive": "HS-code product analysis",
-    "Tariff Impact Simulator": "Simulate tariff shocks",
-    "Welfare Analysis": "ACR (2012) welfare",
-    "GE Counterfactual Lab": "Multi-sector GE + Nash tariffs",
-    "Research Lab": "Optimal tariffs, Laffer curves",
-    "Gravity Model Lab": "OLS, PPML, sector elasticities",
-    "Network Invariants": "Comprehensive graph measures",
-    "3D Network Topology": "Force-directed 3D graph",
-    "Topology-Counterfactual": "PH under tariff wars (novel)",
-    "Persistent Homology": "Rips filtration, Betti curves",
-    "Feature Explorer": "Map features to countries & $",
-    "Statistical Significance": "Null model p-values",
-    "Mapper Lens": "Topological data summary",
-    "Topological Evolution": "Bottleneck distances over time",
-    "Topological Sensitivity": "Topological phase transitions",
+    "Home": "",
+    "3D Trade Globe": "Interactive bilateral flow map",
+    "Network Evolution": "Structural trends, 2002–2022",
+    "Country Dependencies": "Concentration risk & exposure",
+    "US Trade Exposure": "Import vulnerability profile",
+    "Supply Chain Deep Dive": "HS-code product mapping",
+    "Tariff Impact Simulator": "Bilateral & multilateral shocks",
+    "Welfare Analysis": "Gains from trade & policy costs",
+    "GE Counterfactual Lab": "Multi-sector general equilibrium",
+    "Research Lab": "Optimal tariffs & Laffer curves",
+    "Gravity Model Lab": "OLS & PPML structural gravity",
+    "Network Invariants": "Centrality, clustering, spectra",
+    "3D Network Topology": "Force-directed 3D layout",
+    "Topology-Counterfactual": "How tariffs reshape structure",
+    "Persistent Homology": "Rips filtration & Betti numbers",
+    "Feature Explorer": "Map features to countries & flows",
+    "Statistical Significance": "Null model benchmarks",
+    "Mapper Lens": "Compressed structural summary",
+    "Topological Evolution": "Structural change over time",
+    "Topological Sensitivity": "Structural tipping points",
 }
 
 page = st.sidebar.radio(
@@ -200,184 +200,248 @@ if page == "Home" or page.startswith("──"):
     _top_flow_B = _top_flow["trade_value_usd_millions"] / 1e3
 
     # ── Hero ──
-    st.markdown(f"""
-    <div style="text-align: center; padding: 40px 20px 10px 20px;">
-        <div style="font-family: 'Source Serif 4', Georgia, serif; font-size: 2.8rem;
-                    font-weight: 600; color: #ffffff; letter-spacing: -0.03em; line-height: 1.15;">
-            Trade Network Intelligence
+    st.markdown("""
+    <div class="hero-section">
+        <div class="hero-kicker">Research Platform</div>
+        <div class="hero-title">Trade Network Intelligence</div>
+        <div class="hero-subtitle">
+            Quantitative analysis of global trade architecture — structure, vulnerability,
+            and the propagation of policy shocks across 226 economies.
         </div>
-        <div style="font-family: 'Inter', sans-serif; font-size: 1.05rem; color: #7b8fa3;
-                    margin-top: 10px; max-width: 680px; margin-left: auto; margin-right: auto;
-                    line-height: 1.6;">
-            An interactive research platform for exploring the structure, vulnerability,
-            and topology of global trade — from bilateral flows to counterfactual policy analysis.
-        </div>
-        <div style="font-family: 'Inter', sans-serif; font-size: 0.82rem; color: #4a5568;
-                    margin-top: 14px;">
-            Built by Ian Helfrich, PhD — Georgia Institute of Technology
+        <div class="hero-accent-line"></div>
+        <div class="hero-author">
+            <strong>Dr. Ian Helfrich</strong> &ensp;·&ensp; Georgia Institute of Technology
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("")  # spacer
+    # ── Data currency badge ──
+    st.markdown(
+        '<div style="text-align: center; margin-bottom: 8px;">'
+        + data_badge("BACI bilateral trade data", f"{all_years[0]}–{all_years[-1]} · {_n_countries} economies")
+        + '</div>',
+        unsafe_allow_html=True,
+    )
 
     # ── Headline metrics ──
     h1, h2, h3, h4 = st.columns(4)
     h1.markdown(metric_card("Global Trade ({})".format(_latest_year),
                 f"${_total_trade_T:.1f}T",
-                f"{_growth_x:.1f}x since {all_years[0]}", "blue"), unsafe_allow_html=True)
-    h2.markdown(metric_card("Countries", str(_n_countries),
-                f"{_n_flows:,} bilateral flows", "cyan"), unsafe_allow_html=True)
-    h3.markdown(metric_card("Largest Flow",
+                f"{_growth_x:.1f}× since {all_years[0]}", "navy"), unsafe_allow_html=True)
+    h2.markdown(metric_card("Economies Covered", str(_n_countries),
+                f"{_n_flows:,} bilateral flows", "blue"), unsafe_allow_html=True)
+    h3.markdown(metric_card("Largest Bilateral Flow",
                 f"${_top_flow_B:.0f}B",
                 f"{_top_flow['iso_o']} → {_top_flow['iso_d']}", "green"), unsafe_allow_html=True)
     h4.markdown(metric_card("Time Span",
                 f"{all_years[0]}–{all_years[-1]}",
-                f"{len(all_years)} years of BACI data", "orange"), unsafe_allow_html=True)
+                f"{len(all_years)} years of BACI data", "gold"), unsafe_allow_html=True)
 
     st.markdown("")
 
-    # ── What this platform does (3 pillars) ──
-    st.markdown(section_header("What You Can Do Here"), unsafe_allow_html=True)
+    # ── The Challenge ──
+    st.markdown(section_header("The Challenge"), unsafe_allow_html=True)
+    st.markdown("""
+    <div class="prose-block">
+    <p>
+    Global trade is not a collection of bilateral relationships — it is a network. The more than
+    $23 trillion in goods that cross borders each year flows through a complex web of dependencies
+    where a tariff imposed in Washington reverberates through supply chains in Shenzhen, assembly
+    lines in Guadalajara, and commodity markets in São Paulo. Understanding this network — its
+    architecture, its fragilities, and how it responds to policy intervention — requires tools that
+    go beyond bilateral trade balances and static country rankings.
+    </p>
+    <p>
+    The global trade system is undergoing its most significant structural transformation since
+    the postwar era. The US-China trade war, COVID-19 supply chain disruptions, the CHIPS and
+    Science Act, and the resurgence of industrial policy across advanced economies have made trade
+    network analysis essential for policymakers, analysts, and researchers. Understanding not just
+    <em>how much</em> countries trade, but <em>how the network is organized</em> — its cycles,
+    bottlenecks, and structural vulnerabilities — is critical for anticipating how policy changes
+    propagate through the system.
+    </p>
+    <p>
+    This platform provides those tools. I integrate twenty years of bilateral trade data with
+    structural gravity models, multi-sector general equilibrium analysis, and topological data
+    analysis to offer a unified analytical framework for understanding how global trade works,
+    where it is vulnerable, and what happens when policy disrupts it.
+    </p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    p1, p2, p3 = st.columns(3)
-    with p1:
-        st.markdown(f"""
-        <div class="metric-card blue" style="min-height: 220px;">
-            <div class="mc-label">EXPLORE</div>
-            <div class="mc-value" style="font-size: 1.2rem; margin-bottom: 10px;">Map the Network</div>
-            <div style="color: #c8d6e5; font-size: 0.88rem; line-height: 1.55;">
-                Visualize $23T+ in bilateral trade flows on an interactive 3D globe.
-                Track how the network's structure has evolved over two decades.
-                Identify which countries are dangerously concentrated in their trade partners.
+    st.markdown("")
+
+    # ── Capabilities (4 feature cards) ──
+    st.markdown(section_header("Analytical Capabilities"), unsafe_allow_html=True)
+
+    fc1, fc2 = st.columns(2)
+    with fc1:
+        st.markdown("""
+        <div class="feature-card">
+            <div class="fc-kicker navy">NETWORK ARCHITECTURE</div>
+            <div class="fc-title">Map the Global Trade Network</div>
+            <div class="fc-body">
+                Visualize the complete bilateral trade network across 226 economies from
+                2002 to 2022. Compute centrality, identify concentration risk, and track how
+                the network's structure has shifted — including the emergence of China as the
+                system's most connected node and the evolving position of the United States.
+                Identify which import dependencies create strategic vulnerability and which
+                sectors face dangerous supplier concentration.
             </div>
-            <div style="margin-top: 14px; font-size: 0.8rem; color: #64b5f6;">
-                Start with → 3D Trade Globe, Network Evolution
-            </div>
+            <div class="fc-cta navy">→ Global Trade Map &ensp;·&ensp; Structural Trends &ensp;·&ensp; Dependency Analysis</div>
         </div>
         """, unsafe_allow_html=True)
-    with p2:
-        st.markdown(f"""
-        <div class="metric-card green" style="min-height: 220px;">
-            <div class="mc-label">POLICY</div>
-            <div class="mc-value" style="font-size: 1.2rem; margin-bottom: 10px;">Simulate Tariffs</div>
-            <div style="color: #c8d6e5; font-size: 0.88rem; line-height: 1.55;">
-                Run counterfactual trade policy experiments. What happens if the US imposes 20% tariffs?
-                Compute Nash equilibrium tariffs, optimal tariffs, and welfare impacts for any country
-                under 8 different trade elasticity specifications.
+    with fc2:
+        st.markdown("""
+        <div class="feature-card">
+            <div class="fc-kicker green">POLICY COUNTERFACTUALS</div>
+            <div class="fc-title">Simulate Tariff Scenarios in General Equilibrium</div>
+            <div class="fc-body">
+                Run "what-if" experiments through a multi-sector general equilibrium model
+                based on Lashkaripour (2021, <em>Journal of International Economics</em>).
+                Impose tariffs unilaterally or multilaterally, compute Nash equilibrium tariff
+                vectors, find optimal unilateral tariffs, and trace the welfare implications for
+                every country in the system. Results are compared across eight different trade
+                elasticity specifications to quantify how sensitive policy conclusions are to
+                modeling assumptions.
             </div>
-            <div style="margin-top: 14px; font-size: 0.8rem; color: #66bb6a;">
-                Start with → Tariff Impact Simulator, GE Counterfactual Lab
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    with p3:
-        st.markdown(f"""
-        <div class="metric-card purple" style="min-height: 220px;">
-            <div class="mc-label">NOVEL RESEARCH</div>
-            <div class="mc-value" style="font-size: 1.2rem; margin-bottom: 10px;">Topology Meets Trade</div>
-            <div style="color: #c8d6e5; font-size: 0.88rem; line-height: 1.55;">
-                Apply persistent homology to trade networks — then ask how topology changes
-                under counterfactual tariff regimes. No existing paper does this. Track Betti numbers,
-                persistence diagrams, and topological Laffer curves across policy scenarios.
-            </div>
-            <div style="margin-top: 14px; font-size: 0.8rem; color: #ab47bc;">
-                Start with → Topology-Counterfactual, Persistent Homology
-            </div>
+            <div class="fc-cta green">→ Tariff Scenario Builder &ensp;·&ensp; General Equilibrium Lab &ensp;·&ensp; Policy Research</div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("")
 
-    # ── Guided paths for different audiences ──
-    st.markdown(section_header("Where to Start",
-                "Choose the path that matches your interest"), unsafe_allow_html=True)
-
-    with st.expander("I'm a policymaker — show me tariff impacts", expanded=False):
+    fc3, fc4 = st.columns(2)
+    with fc3:
         st.markdown("""
-        **Recommended path:**
-
-        1. **US Trade Exposure** — See where the US is most vulnerable: which imports are concentrated,
-           which sectors depend on a single source country.
-        2. **Tariff Impact Simulator** — Model a specific tariff scenario (e.g., 10% on Chinese imports)
-           and see how trade flows redirect.
-        3. **GE Counterfactual Lab** → Tariff Scenarios tab — Run the same scenario through a rigorous
-           multi-sector general equilibrium model with 8 different elasticity estimates.
-        4. **Research Lab** → Retaliation Comparison — See how welfare changes when trading partners retaliate.
-
-        **Key insight:** The welfare impact of tariffs depends enormously on the assumed trade elasticity.
-        The 8 specifications in this platform span a wide range — from near-zero costs to severe welfare losses
-        for the same tariff. This uncertainty is the most policy-relevant finding.
-        """)
-
-    with st.expander("I'm an economist — show me the models", expanded=False):
+        <div class="feature-card">
+            <div class="fc-kicker purple">TOPOLOGICAL STRUCTURE</div>
+            <div class="fc-title">Reveal Higher-Order Trade Patterns</div>
+            <div class="fc-body">
+                Apply persistent homology — a technique from topological data analysis — to
+                the trade distance matrix. This reveals structural patterns invisible to
+                pairwise analysis: H₁ cycles (triangular trade relationships that resist
+                bilateral disruption), H₀ components (trade bloc formation dynamics), and
+                H₂ voids (missing multilateral integration). Each topological feature is
+                attributed to specific countries and dollar-denominated trade flows.
+            </div>
+            <div class="fc-cta purple">→ Persistent Homology &ensp;·&ensp; Feature Attribution &ensp;·&ensp; Statistical Testing</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with fc4:
         st.markdown("""
-        **Recommended path:**
-
-        1. **Gravity Model Lab** — OLS and PPML gravity estimates with sector-level elasticities.
-           Benchmark the data before counterfactual analysis.
-        2. **Welfare Analysis** — ACR (2012) sufficient-statistics welfare computation. Compare with
-           the multi-sector GE approach.
-        3. **GE Counterfactual Lab** — Full Lashkaripour (2021, JIE) implementation: CES preferences,
-           input-output linkages, 81 countries × 28 sectors (ICIO) or 44 × 16 (WIOD).
-           Compute Nash equilibrium tariffs and optimal unilateral tariffs for any country.
-        4. **Research Lab** — Batch analyses: optimal tariff survey (every country × elasticity),
-           Laffer curves, cross-elasticity sensitivity.
-
-        **Key technical feature:** The GE solver uses `scipy.optimize.root` with multi-start
-        (hybr + lm fallback). Convergence is tracked per-scenario. The 8 elasticity specifications
-        span Caliendo-Parro (2015), Simonovska-Waugh (2014), Shapiro (2016), and more.
-        """)
-
-    with st.expander("I'm a researcher — show me the novel contributions", expanded=False):
-        st.markdown("""
-        **Recommended path:**
-
-        1. **Persistent Homology** — Compute Vietoris-Rips persistent homology on the trade distance
-           matrix. See H₀ (trade blocs), H₁ (triangular trade patterns), and H₂ (higher-order voids).
-        2. **Feature Explorer** — Map each topological feature back to specific countries and dollar values.
-           Which countries form the most persistent H₁ cycle?
-        3. **Statistical Significance** — Are the observed Betti numbers statistically significant?
-           Compare against Erdos-Renyi, configuration model, and gravity-predicted null networks.
-        4. **Topology-Counterfactual** — *The headline result.* Compute PH on counterfactual trade flows
-           (networks that would exist under different tariffs but never actually occurred).
-           The "topological Laffer curve" shows β₁ as a function of tariff rate.
-        5. **Mapper Lens** — KMapper visualization for a compressed topological summary.
-
-        **What's novel:** No existing paper applies persistent homology to counterfactual trade networks.
-        Standard TDA-trade papers (Topaz 2015, Feng 2019) use observed data — their topology mostly
-        captures GDP size and geography. By running TDA on GE counterfactual flows, we isolate how
-        *policy* reshapes network topology.
-        """)
+        <div class="feature-card">
+            <div class="fc-kicker gold">STRUCTURAL POLICY ANALYSIS</div>
+            <div class="fc-title">How Tariffs Reshape the Topology of Trade</div>
+            <div class="fc-body">
+                This platform's central analytical contribution: persistent homology applied
+                to counterfactual trade networks — networks that do not exist in the observed
+                data but that general equilibrium models predict would emerge under alternative
+                tariff regimes. This makes it possible to ask: How does a 25% tariff on Chinese
+                goods change the cycle structure of global trade? At what tariff rate does the
+                network undergo a structural phase transition?
+            </div>
+            <div class="fc-cta gold">→ Topological Policy Analysis &ensp;·&ensp; Structural Tipping Points</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("")
 
-    # ── Data sources ──
-    st.markdown(section_header("Data & Methods"), unsafe_allow_html=True)
+    # ── Methodology ──
+    st.markdown(section_header("Data & Methodology"), unsafe_allow_html=True)
+
     d1, d2 = st.columns(2)
     with d1:
         st.markdown("""
         **Data Sources**
-        - **BACI** (CEPII) — 226 countries, bilateral trade, 2002–2022
-        - **OECD ICIO** — 81 countries × 28 sectors, I-O tables + tariffs, 2011–2022
+        - **BACI** (CEPII) — Bilateral trade flows, 226 economies, 2002–2022
+        - **OECD ICIO** — 81 countries × 28 sectors, input-output tables with tariff data, 2011–2022
         - **WIOD** — 44 countries × 16 sectors, 2000–2014
-        - **CEPII Gravity** — Distance, contiguity, language, colonial ties, RTAs
-        - **Teti Global Tariff Database** — Applied MFN and preferential tariffs
+        - **CEPII Gravity** — Bilateral distance, contiguity, language, colonial history, RTAs
+        - **Teti Global Tariff Database** — Applied MFN and preferential tariff rates
         """)
     with d2:
         st.markdown("""
         **Methods**
-        - **Gravity:** OLS, PPML (Santos Silva & Tenreyro, 2006)
-        - **Welfare:** ACR (Arkolakis, Costinot, Rodríguez-Clare, 2012)
-        - **GE Counterfactual:** Lashkaripour (2021, JIE) sufficient-statistics approach
-        - **Topology:** Persistent homology (Carlsson, 2009), Mapper (Singh et al., 2007)
-        - **Novel:** TDA on counterfactual trade networks (this platform)
+        - **Structural Gravity:** OLS and PPML estimation (Santos Silva & Tenreyro, 2006)
+        - **Welfare:** ACR sufficient statistics (Arkolakis, Costinot, & Rodríguez-Clare, 2012)
+        - **General Equilibrium:** Lashkaripour (2021, JIE) sufficient-statistics hat algebra with CES preferences and input-output linkages
+        - **Trade Elasticities:** Eight specifications — IS, CP, U4, BSY, GYY, Shapiro, FGO, LL
+        - **Topology:** Persistent homology via Vietoris-Rips filtration (Carlsson, 2009); Mapper algorithm (Singh, Mémoli, & Carlsson, 2007)
+        """)
+
+    st.markdown("")
+
+    # ── Guided paths ──
+    st.markdown(section_header("Where to Start",
+                "Select a path based on your analytical interest"), unsafe_allow_html=True)
+
+    with st.expander("Policy Analysis — Tariff impacts and trade vulnerability", expanded=False):
+        st.markdown("""
+        **Recommended path:**
+
+        1. **US Trade Exposure** — Identify where US imports are most concentrated and which sectors
+           depend on a limited number of source countries.
+        2. **Tariff Impact Simulator** — Model a specific scenario (e.g., 10% across-the-board tariffs on
+           Chinese imports) and observe how trade flows reallocate across partners.
+        3. **GE Counterfactual Lab** — Run the same scenario through a rigorous multi-sector general
+           equilibrium model with eight different elasticity specifications to quantify the range of
+           possible welfare outcomes.
+        4. **Policy Research** — Compare welfare impacts with and without retaliation; examine Laffer
+           curve dynamics to identify the tariff rate that maximizes national welfare.
+
+        **Key finding:** The welfare impact of tariffs depends critically on the assumed trade elasticity.
+        The eight specifications in this platform span a wide range — from near-zero costs to substantial
+        welfare losses for the same tariff. Communicating this uncertainty honestly is essential for
+        responsible policy analysis.
+        """)
+
+    with st.expander("Economic Modeling — Gravity, GE counterfactuals, elasticity estimation", expanded=False):
+        st.markdown("""
+        **Recommended path:**
+
+        1. **Gravity Estimation** — OLS and PPML structural gravity estimates with sector-level
+           elasticities. Establish benchmarks before running counterfactual analysis.
+        2. **Welfare Impact** — ACR (2012) sufficient-statistics welfare computation at the country level.
+        3. **GE Counterfactual Lab** — Full Lashkaripour (2021, JIE) implementation: CES preferences,
+           input-output linkages, 81 countries × 28 sectors (ICIO) or 44 × 16 (WIOD).
+           Compute Nash equilibrium tariffs and optimal unilateral tariffs for any country.
+        4. **Policy Research** — Batch analyses: optimal tariff surveys across every country and
+           elasticity specification, Laffer curves, and cross-elasticity sensitivity tests.
+
+        The GE solver uses `scipy.optimize.root` with multi-start (hybr + Levenberg-Marquardt fallback).
+        Convergence is tracked per-scenario. The eight elasticity specifications span Caliendo & Parro (2015),
+        Simonovska & Waugh (2014), Shapiro (2016), and others.
+        """)
+
+    with st.expander("Topological Analysis — Persistent homology and structural inference", expanded=False):
+        st.markdown("""
+        **Recommended path:**
+
+        1. **Persistent Homology** — Compute Vietoris-Rips persistent homology on the trade distance
+           matrix. Observe H₀ (connected component formation), H₁ (trade cycles), and H₂ (higher-order voids).
+        2. **Feature Attribution** — Map each topological feature to specific countries and dollar-denominated
+           trade flows. Identify which economies form the most persistent H₁ cycle.
+        3. **Statistical Testing** — Benchmark the observed Betti numbers against Erdos-Renyi,
+           configuration model, and gravity-predicted null networks to test significance.
+        4. **Topological Policy Analysis** — Compute persistent homology on counterfactual trade
+           networks predicted by the GE model under alternative tariff regimes. The "topological
+           Laffer curve" shows how the number of trade cycles varies as a function of tariff rate —
+           revealing structural phase transitions where small policy changes trigger large network
+           reorganizations.
+        5. **Topological Summary** — Mapper algorithm visualization for a compressed structural overview.
+
+        This analysis applies persistent homology to counterfactual trade networks — networks that exist
+        only as predictions of the general equilibrium model. Standard applications of TDA to trade
+        (Topaz et al., 2015; Feng et al., 2019) use observed data, so their topology largely reflects
+        GDP and geographic proximity. By running TDA on GE-predicted counterfactual flows, I isolate
+        how *policy* reshapes the network's topological structure.
         """)
 
     st.divider()
     st.markdown("""
-    <div style="text-align: center; font-size: 0.78rem; color: #4a5568; padding: 10px 0;">
-        Select a page from the sidebar to begin. All computations run in real-time.
+    <div style="text-align: center; font-size: 0.82rem; color: #6b6b7b; padding: 12px 0; line-height: 1.6;">
+        Select a page from the sidebar to begin. All computations run in real time on the underlying data.
     </div>
     """, unsafe_allow_html=True)
 
@@ -483,20 +547,20 @@ elif page == "3D Trade Globe":
 
     fig.update_geos(
         projection_type="natural earth",
-        showland=True, landcolor="rgb(22, 28, 45)",
-        showocean=True, oceancolor="rgb(12, 18, 35)",
-        showcountries=True, countrycolor="rgb(50, 60, 80)",
-        showcoastlines=True, coastlinecolor="rgb(40, 50, 70)",
+        showland=True, landcolor="#e8e5e0",
+        showocean=True, oceancolor="#eef4fb",
+        showcountries=True, countrycolor="#b8b4ae",
+        showcoastlines=True, coastlinecolor="#b8b4ae",
         showframe=False,
-        showlakes=True, lakecolor="rgb(12, 18, 35)",
+        showlakes=True, lakecolor="#eef4fb",
     )
     fig.update_layout(
         height=620, margin=dict(l=0, r=0, t=40, b=0),
         showlegend=False,
         title=dict(text=f"Global Trade Flows — {year}", x=0.5,
-                   font=dict(size=18, color="white")),
-        paper_bgcolor="rgb(10, 15, 30)",
-        geo=dict(bgcolor="rgb(10, 15, 30)"),
+                   font=dict(size=18, color="#1a1a2e")),
+        paper_bgcolor="#f7f6f3",
+        geo=dict(bgcolor="#f7f6f3"),
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -617,7 +681,7 @@ elif page == "3D Network Topology":
             ),
             text=[n["id"] for n in layout["nodes"]],
             textposition="top center",
-            textfont=dict(size=9, color="white"),
+            textfont=dict(size=9, color="#1a1a2e"),
             hoverinfo="text",
             hovertext=hover_texts,
             showlegend=False,
@@ -627,18 +691,18 @@ elif page == "3D Network Topology":
             height=700,
             scene=dict(
                 xaxis=dict(showgrid=False, showticklabels=False, title="", zeroline=False,
-                          backgroundcolor="rgb(10, 15, 30)"),
+                          backgroundcolor="#f7f6f3"),
                 yaxis=dict(showgrid=False, showticklabels=False, title="", zeroline=False,
-                          backgroundcolor="rgb(10, 15, 30)"),
+                          backgroundcolor="#f7f6f3"),
                 zaxis=dict(showgrid=False, showticklabels=False, title="", zeroline=False,
-                          backgroundcolor="rgb(10, 15, 30)"),
-                bgcolor="rgb(10, 15, 30)",
+                          backgroundcolor="#f7f6f3"),
+                bgcolor="#f7f6f3",
             ),
-            paper_bgcolor="rgb(10, 15, 30)",
+            paper_bgcolor="#f7f6f3",
             margin=dict(l=0, r=0, t=40, b=0),
             title=dict(
                 text=f"Trade Network — {year_3d} ({n_countries_3d} countries, {layout['n_communities']} communities)",
-                font=dict(color="white", size=16),
+                font=dict(color="#1a1a2e", size=16),
                 x=0.5,
             ),
         )
@@ -684,9 +748,9 @@ elif page == "3D Network Topology":
         fig_pr.update_layout(
             height=500, xaxis_title="PageRank (%)", yaxis_title="",
             title="Top 20 Countries by PageRank Centrality",
-            plot_bgcolor="rgb(15, 20, 35)",
-            paper_bgcolor="rgb(15, 20, 35)",
-            font=dict(color="white"),
+            plot_bgcolor="#ffffff",
+            paper_bgcolor="#ffffff",
+            font=dict(color="#1a1a2e"),
             yaxis=dict(autorange="reversed"),
         )
         st.plotly_chart(fig_pr, use_container_width=True)
@@ -985,9 +1049,9 @@ elif page == "Country Dependencies":
 
         fig_sec = go.Figure()
         fig_sec.add_trace(go.Bar(y=sec_df.index, x=sec_df["Exports"], name="Exports",
-                                 orientation="h", marker_color="rgb(55, 83, 109)"))
+                                 orientation="h", marker_color="#1e3a5f"))
         fig_sec.add_trace(go.Bar(y=sec_df.index, x=sec_df["Imports"], name="Imports",
-                                 orientation="h", marker_color="rgb(26, 118, 255)"))
+                                 orientation="h", marker_color="#2563eb"))
         fig_sec.update_layout(
             barmode="group", height=600,
             xaxis_title="Trade Value ($M)", yaxis_title="",
@@ -1015,7 +1079,7 @@ elif page == "Network Evolution":
     fig_stats.add_trace(go.Scatter(
         x=stats["year"], y=stats["total_trade_billions"],
         mode="lines+markers", name="Total Trade ($B)",
-        line=dict(color="rgb(55, 83, 109)", width=3),
+        line=dict(color="#1e3a5f", width=3),
     ))
     fig_stats.update_layout(
         title="Total Global Trade Volume",
@@ -1029,7 +1093,7 @@ elif page == "Network Evolution":
         fig_density.add_trace(go.Scatter(
             x=stats["year"], y=stats["density"],
             mode="lines+markers", name="Network Density",
-            line=dict(color="rgb(26, 118, 255)", width=2),
+            line=dict(color="#2563eb", width=2),
         ))
         fig_density.update_layout(
             title="Network Density (Connectedness)",
@@ -1042,7 +1106,7 @@ elif page == "Network Evolution":
         fig_conc.add_trace(go.Scatter(
             x=stats["year"], y=stats["top10_concentration"],
             mode="lines+markers", name="Top 10 Concentration",
-            line=dict(color="rgb(219, 64, 82)", width=2),
+            line=dict(color="#dc2626", width=2),
         ))
         fig_conc.update_layout(
             title="Top 10 Countries Share of Global Trade",
@@ -1056,7 +1120,7 @@ elif page == "Network Evolution":
         fig_links.add_trace(go.Scatter(
             x=stats["year"], y=stats["trade_links"],
             mode="lines+markers", name="Trade Links",
-            line=dict(color="rgb(44, 160, 44)", width=2),
+            line=dict(color="#16a34a", width=2),
         ))
         fig_links.update_layout(
             title="Number of Active Trade Links",
@@ -1069,7 +1133,7 @@ elif page == "Network Evolution":
         fig_clust.add_trace(go.Scatter(
             x=stats["year"], y=stats["avg_clustering"],
             mode="lines+markers", name="Clustering",
-            line=dict(color="rgb(148, 103, 189)", width=2),
+            line=dict(color="#7c3aed", width=2),
         ))
         fig_clust.update_layout(
             title="Average Clustering Coefficient",
@@ -1260,9 +1324,9 @@ elif page == "Network Invariants":
                     height=450, title="Eigenvector vs PageRank Centrality",
                     xaxis_title="Eigenvector Centrality",
                     yaxis_title="PageRank",
-                    plot_bgcolor="rgb(15, 20, 35)",
-                    paper_bgcolor="rgb(15, 20, 35)",
-                    font=dict(color="white"),
+                    plot_bgcolor="#ffffff",
+                    paper_bgcolor="#ffffff",
+                    font=dict(color="#1a1a2e"),
                 )
                 st.plotly_chart(fig_scatter, use_container_width=True)
 
@@ -1281,9 +1345,9 @@ elif page == "Network Invariants":
                 fig_btwn.update_layout(
                     height=450, title="Top 20 Bridge Nations (Betweenness)",
                     xaxis_title="Betweenness Centrality", yaxis_title="",
-                    plot_bgcolor="rgb(15, 20, 35)",
-                    paper_bgcolor="rgb(15, 20, 35)",
-                    font=dict(color="white"),
+                    plot_bgcolor="#ffffff",
+                    paper_bgcolor="#ffffff",
+                    font=dict(color="#1a1a2e"),
                 )
                 st.plotly_chart(fig_btwn, use_container_width=True)
 
@@ -1296,7 +1360,7 @@ elif page == "Network Invariants":
                 x=list(range(1, len(strengths_sorted) + 1)),
                 y=strengths_sorted / 1000,
                 mode="markers+lines",
-                marker=dict(size=5, color="rgb(100, 181, 246)"),
+                marker=dict(size=5, color="#2563eb"),
                 line=dict(color="rgba(100, 181, 246, 0.5)", width=1),
             ))
             fig_zipf.update_layout(
@@ -1304,9 +1368,9 @@ elif page == "Network Invariants":
                 xaxis=dict(type="log", title="Rank"),
                 yaxis=dict(type="log", title="Total Trade ($B)"),
                 title="Zipf Plot: Trade Strength Distribution",
-                plot_bgcolor="rgb(15, 20, 35)",
-                paper_bgcolor="rgb(15, 20, 35)",
-                font=dict(color="white"),
+                plot_bgcolor="#ffffff",
+                paper_bgcolor="#ffffff",
+                font=dict(color="#1a1a2e"),
             )
             st.plotly_chart(fig_zipf, use_container_width=True)
 
@@ -1353,7 +1417,7 @@ elif page == "US Trade Exposure":
 
     st.divider()
 
-    # US imports by country — who we depend on
+    # US imports by country — where the US depends
     st.subheader("Where US Imports Come From")
     imp = us_deps["import_dependency"].head(20).copy()
     imp["partner_name"] = imp["partner"].map(iso_to_name)
@@ -1434,12 +1498,12 @@ elif page == "US Trade Exposure":
     fig_china.add_trace(go.Scatter(
         x=china_df["tariff"], y=china_df["bilateral_trade"] / 1000,
         mode="lines+markers", name="Remaining Bilateral Trade ($B)",
-        line=dict(color="rgb(219, 64, 82)", width=3),
+        line=dict(color="#dc2626", width=3),
     ))
     fig_china.add_trace(go.Scatter(
         x=china_df["tariff"], y=china_df["trade_loss"] / 1000,
         mode="lines+markers", name="Cumulative Trade Loss ($B)",
-        line=dict(color="rgb(55, 83, 109)", width=2, dash="dash"),
+        line=dict(color="#1e3a5f", width=2, dash="dash"),
     ))
     fig_china.update_layout(
         title="US-China Trade vs. Tariff Level",
@@ -1483,12 +1547,12 @@ elif page == "US Trade Exposure":
         fig_exp.add_trace(go.Bar(
             y=exposure.index, x=exposure["tariffed_imports"],
             orientation="h", name="From Tariffed Countries",
-            marker_color="rgb(219, 64, 82)",
+            marker_color="#dc2626",
         ))
         fig_exp.add_trace(go.Bar(
             y=exposure.index, x=exposure["total_imports"] - exposure["tariffed_imports"],
             orientation="h", name="From Other Countries",
-            marker_color="rgb(200, 200, 200)",
+            marker_color="#b8b4ae",
         ))
         fig_exp.update_layout(
             barmode="stack", height=600,
@@ -1549,7 +1613,7 @@ elif page == "Gravity Model Lab":
             y=plot_df["variable"], x=plot_df["coefficient"],
             orientation="h",
             error_x=dict(type="data", array=plot_df["std_error"].values * 1.96),
-            marker_color=["rgb(219,64,82)" if c < 0 else "rgb(55,83,109)" for c in plot_df["coefficient"]],
+            marker_color=["#dc2626" if c < 0 else "#1e3a5f" for c in plot_df["coefficient"]],
         ))
         fig_coef.add_vline(x=0, line_dash="dash", line_color="gray")
         fig_coef.update_layout(
@@ -1593,9 +1657,9 @@ elif page == "Gravity Model Lab":
         comparison = comparison[comparison["variable"] != "constant"]
         fig_comp = go.Figure()
         fig_comp.add_trace(go.Bar(name="OLS", y=comparison["variable"], x=comparison["OLS"],
-                                   orientation="h", marker_color="rgb(55,83,109)"))
+                                   orientation="h", marker_color="#1e3a5f"))
         fig_comp.add_trace(go.Bar(name="PPML", y=comparison["variable"], x=comparison["PPML"],
-                                   orientation="h", marker_color="rgb(26,118,255)"))
+                                   orientation="h", marker_color="#2563eb"))
         fig_comp.update_layout(barmode="group", height=400, title="Coefficient Comparison")
         st.plotly_chart(fig_comp, use_container_width=True)
 
@@ -1819,7 +1883,7 @@ elif page == "Welfare Analysis":
         welfare_multi.sort_values("welfare_change_pct"),
         x="welfare_change_pct", y="country_name",
         orientation="h", color="role",
-        color_discrete_map={"Imposing": "rgb(219,64,82)", "Targeted": "rgb(55,83,109)"},
+        color_discrete_map={"Imposing": "#dc2626", "Targeted": "#1e3a5f"},
         labels={"welfare_change_pct": "Welfare Change (%)", "country_name": "", "role": "Role"},
         title=f"Welfare Impact by Country — {scenario_name}",
     )
@@ -1863,7 +1927,7 @@ elif page == "Welfare Analysis":
     fig_sens.add_trace(go.Scatter(
         x=sens_df["elasticity"], y=sens_df["welfare_pct"],
         mode="lines+markers", name="Welfare Change (%)",
-        line=dict(color="rgb(219,64,82)", width=3),
+        line=dict(color="#dc2626", width=3),
     ))
     fig_sens.add_hline(y=0, line_dash="dash", line_color="gray")
     fig_sens.update_layout(
@@ -1906,7 +1970,7 @@ elif page == "Persistent Homology":
         r"""
         The trade network $G=(V,E,w)$ induces a filtered **Vietoris-Rips complex** $\mathcal{K}(\varepsilon)$
         where trade intensity is converted to distance (high trade $\to$ small distance).
-        As the filtration parameter $\varepsilon$ increases, we track the birth and death of
+        As the filtration parameter $\varepsilon$ increases, the filtration tracks the birth and death of
         topological features via **persistent homology** $H_k(\mathcal{K})$:
 
         | Homology | Geometric meaning | Economic interpretation |
@@ -1956,7 +2020,7 @@ elif page == "Persistent Homology":
     st.markdown("Each point $(b, d)$ represents a topological feature born at filtration $b$ and dying at $d$. Distance from the diagonal = persistence = significance.")
 
     fig_pd = go.Figure()
-    colors = {0: "rgb(55,83,109)", 1: "rgb(219,64,82)", 2: "rgb(44,160,44)"}
+    colors = {0: "#1e3a5f", 1: "#dc2626", 2: "#16a34a"}
     names = {0: "H₀ (components)", 1: "H₁ (cycles)", 2: "H₂ (voids)"}
 
     for dim in range(3):
@@ -1981,9 +2045,9 @@ elif page == "Persistent Homology":
         title="Persistence Diagram — Rips Filtration",
         xaxis=dict(range=[-0.02, 1.02]),
         yaxis=dict(range=[-0.02, 1.02]),
-        plot_bgcolor="rgb(15, 20, 35)",
-        paper_bgcolor="rgb(15, 20, 35)",
-        font=dict(color="white"),
+        plot_bgcolor="#ffffff",
+        paper_bgcolor="#ffffff",
+        font=dict(color="#1a1a2e"),
     )
     st.plotly_chart(fig_pd, use_container_width=True)
 
@@ -2013,7 +2077,7 @@ elif page == "Persistent Homology":
         fig_euler = go.Figure()
         fig_euler.add_trace(go.Scatter(
             x=filt_vals, y=ph_result["euler_curve"],
-            mode="lines", line=dict(color="rgb(148,103,189)", width=3),
+            mode="lines", line=dict(color="#7c3aed", width=3),
             name="χ(ε)",
         ))
         fig_euler.update_layout(
@@ -2098,12 +2162,12 @@ elif page == "Persistent Homology":
         x=country_labels_viz,
         y=country_labels_viz,
         colorscale=[
-            [0, "rgb(10, 15, 40)"],      # Close — dark navy
-            [0.2, "rgb(30, 60, 120)"],    # Medium-close — deep blue
-            [0.4, "rgb(70, 130, 180)"],   # Moderate — steel blue
-            [0.6, "rgb(180, 100, 50)"],   # Far — amber
-            [0.8, "rgb(220, 60, 30)"],    # Very far — red
-            [1.0, "rgb(255, 255, 100)"],  # Farthest — yellow
+            [0, "#1e3a5f"],        # Close — deep navy
+            [0.2, "#2563eb"],      # Medium-close — blue
+            [0.4, "#60a5fa"],      # Moderate — light blue
+            [0.6, "#f59e0b"],      # Far — amber
+            [0.8, "#dc2626"],      # Very far — red
+            [1.0, "#fde68a"],      # Farthest — light yellow
         ],
         colorbar=dict(title="Distance", thickness=12),
         hovertemplate="%{y} → %{x}<br>Distance: %{z:.3f}<extra></extra>",
@@ -2111,9 +2175,9 @@ elif page == "Persistent Homology":
     fig_heatmap.update_layout(
         height=600, width=600,
         title="Trade Distance Matrix (Rips filtration input)",
-        paper_bgcolor="rgb(10, 15, 30)",
-        plot_bgcolor="rgb(10, 15, 30)",
-        font=dict(color="white", size=8),
+        paper_bgcolor="#f7f6f3",
+        plot_bgcolor="#f7f6f3",
+        font=dict(color="#1a1a2e", size=8),
         xaxis=dict(tickangle=45),
     )
     st.plotly_chart(fig_heatmap, use_container_width=True)
@@ -2147,9 +2211,9 @@ elif page == "Persistent Homology":
                 xaxis_title="Filtration parameter t",
                 yaxis_title="λ_k(t)",
                 title="H₁ Persistence Landscape — Trade Cycle Prominence",
-                plot_bgcolor="rgb(15, 20, 35)",
-                paper_bgcolor="rgb(15, 20, 35)",
-                font=dict(color="white"),
+                plot_bgcolor="#ffffff",
+                paper_bgcolor="#ffffff",
+                font=dict(color="#1a1a2e"),
             )
             st.plotly_chart(fig_land, use_container_width=True)
 
@@ -2258,7 +2322,7 @@ elif page == "Feature Explorer":
                 if (lat_a, lon_a) != (0, 0) and (lat_b, lon_b) != (0, 0):
                     fig_cycle.add_trace(go.Scattergeo(
                         lon=[lon_a, lon_b], lat=[lat_a, lat_b],
-                        mode="lines", line=dict(width=3, color="rgb(255, 100, 100)"),
+                        mode="lines", line=dict(width=3, color="#dc2626"),
                         showlegend=False,
                     ))
             # Draw cycle nodes
@@ -2267,20 +2331,20 @@ elif page == "Feature Explorer":
                 if (lat, lon) != (0, 0):
                     fig_cycle.add_trace(go.Scattergeo(
                         lon=[lon], lat=[lat], mode="markers+text",
-                        marker=dict(size=12, color="rgb(255, 100, 100)"),
-                        text=[c], textposition="top center", textfont=dict(color="white", size=11),
+                        marker=dict(size=12, color="#dc2626"),
+                        text=[c], textposition="top center", textfont=dict(color="#1a1a2e", size=11),
                         showlegend=False,
                     ))
             fig_cycle.update_geos(
                 projection_type="orthographic", showland=True,
-                landcolor="rgb(22, 28, 45)", oceancolor="rgb(12, 18, 35)",
-                showcountries=True, countrycolor="rgb(50, 60, 80)",
+                landcolor="#e8e5e0", oceancolor="#eef4fb",
+                showcountries=True, countrycolor="#b8b4ae",
                 showframe=False,
             )
             fig_cycle.update_layout(
                 height=350, margin=dict(l=0, r=0, t=0, b=0),
-                paper_bgcolor="rgb(10, 15, 30)",
-                geo=dict(bgcolor="rgb(10, 15, 30)"),
+                paper_bgcolor="#f7f6f3",
+                geo=dict(bgcolor="#f7f6f3"),
             )
             st.plotly_chart(fig_cycle, use_container_width=True)
 
@@ -2332,7 +2396,7 @@ elif page == "Statistical Significance":
         r"""
         **Is the observed topology real, or could it arise by chance?**
 
-        We test each Betti number against three null models:
+        This analysis tests each Betti number against three null models:
 
         | Null Model | Question |
         |---|---|
@@ -2411,11 +2475,11 @@ elif page == "Statistical Significance":
                 nbinsx=20,
             ))
         # Observed line
-        fig_hist.add_vline(x=obs[key], line_color="rgb(255, 80, 80)", line_width=3,
+        fig_hist.add_vline(x=obs[key], line_color="#dc2626", line_width=3,
                            annotation_text=f"Observed: {obs[key]}", annotation_position="top right")
         # Gravity line
         if grav.get(key):
-            fig_hist.add_vline(x=grav[key], line_color="rgb(100, 255, 100)", line_width=2,
+            fig_hist.add_vline(x=grav[key], line_color="#16a34a", line_width=2,
                                line_dash="dash",
                                annotation_text=f"Gravity: {grav[key]}", annotation_position="top left")
 
@@ -2423,9 +2487,9 @@ elif page == "Statistical Significance":
             height=300, title=f"{betti_names[dim]} — Null Distribution",
             xaxis_title=f"β_{dim}", yaxis_title="Count",
             barmode="overlay",
-            plot_bgcolor="rgb(15, 20, 35)",
-            paper_bgcolor="rgb(15, 20, 35)",
-            font=dict(color="white"),
+            plot_bgcolor="#ffffff",
+            paper_bgcolor="#ffffff",
+            font=dict(color="#1a1a2e"),
         )
         st.plotly_chart(fig_hist, use_container_width=True)
 
@@ -2444,7 +2508,7 @@ elif page == "Statistical Significance":
         trade_sig_hash, trade_sig_bytes, top_n=top_n_sig,
     )
 
-    colors_ph = {0: "rgb(55,83,109)", 1: "rgb(219,64,82)", 2: "rgb(44,160,44)"}
+    colors_ph = {0: "#1e3a5f", 1: "#dc2626", 2: "#16a34a"}
     names_ph = {0: "H₀", 1: "H₁", 2: "H₂"}
 
     with col_obs:
@@ -2462,8 +2526,8 @@ elif page == "Statistical Significance":
         fig_obs.update_layout(
             height=400, title="Observed Trade Network",
             xaxis=dict(range=[-0.02, 1.02]), yaxis=dict(range=[-0.02, 1.02]),
-            plot_bgcolor="rgb(15, 20, 35)", paper_bgcolor="rgb(15, 20, 35)",
-            font=dict(color="white"),
+            plot_bgcolor="#ffffff", paper_bgcolor="#ffffff",
+            font=dict(color="#1a1a2e"),
         )
         st.plotly_chart(fig_obs, use_container_width=True)
 
@@ -2483,8 +2547,8 @@ elif page == "Statistical Significance":
         fig_grav.update_layout(
             height=400, title="Gravity-Predicted Network",
             xaxis=dict(range=[-0.02, 1.02]), yaxis=dict(range=[-0.02, 1.02]),
-            plot_bgcolor="rgb(15, 20, 35)", paper_bgcolor="rgb(15, 20, 35)",
-            font=dict(color="white"),
+            plot_bgcolor="#ffffff", paper_bgcolor="#ffffff",
+            font=dict(color="#1a1a2e"),
         )
         st.plotly_chart(fig_grav, use_container_width=True)
 
@@ -2621,9 +2685,9 @@ elif page == "Mapper Lens":
         fig_mapper.update_layout(
             height=600,
             title=f"Mapper Graph — {lens_fn.replace('_', ' ').title()} Lens ({year_map})",
-            plot_bgcolor="rgb(10, 15, 30)",
-            paper_bgcolor="rgb(10, 15, 30)",
-            font=dict(color="white"),
+            plot_bgcolor="#f7f6f3",
+            paper_bgcolor="#f7f6f3",
+            font=dict(color="#1a1a2e"),
             xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
             yaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
         )
@@ -2715,9 +2779,9 @@ elif page == "Topological Evolution":
     # Betti numbers over time
     st.subheader("Betti Numbers Over Time")
     fig_betti_time = go.Figure()
-    for dim, color, name in [(0, "rgb(55,83,109)", "β₀ (components)"),
-                               (1, "rgb(219,64,82)", "β₁ (cycles)"),
-                               (2, "rgb(44,160,44)", "β₂ (voids)")]:
+    for dim, color, name in [(0, "#1e3a5f", "β₀ (components)"),
+                               (1, "#dc2626", "β₁ (cycles)"),
+                               (2, "#16a34a", "β₂ (voids)")]:
         if f"beta_{dim}" in evo_df.columns:
             fig_betti_time.add_trace(go.Scatter(
                 x=evo_df["year"], y=evo_df[f"beta_{dim}"],
@@ -2738,7 +2802,7 @@ elif page == "Topological Evolution":
         st.subheader("Total Persistence")
         st.markdown("Sum of all feature lifetimes — measures overall topological complexity.")
         fig_tp = go.Figure()
-        for dim, color, name in [(0, "rgb(55,83,109)", "H₀"), (1, "rgb(219,64,82)", "H₁"), (2, "rgb(44,160,44)", "H₂")]:
+        for dim, color, name in [(0, "#1e3a5f", "H₀"), (1, "#dc2626", "H₁"), (2, "#16a34a", "H₂")]:
             if f"total_persistence_{dim}" in evo_df.columns:
                 fig_tp.add_trace(go.Scatter(
                     x=evo_df["year"], y=evo_df[f"total_persistence_{dim}"],
@@ -2754,7 +2818,7 @@ elif page == "Topological Evolution":
         fig_ec = go.Figure()
         fig_ec.add_trace(go.Scatter(
             x=evo_df["year"], y=evo_df["euler_char"],
-            mode="lines+markers", line=dict(color="rgb(148,103,189)", width=3),
+            mode="lines+markers", line=dict(color="#7c3aed", width=3),
         ))
         fig_ec.update_layout(height=350, xaxis_title="Year", yaxis_title="Euler Characteristic χ")
         st.plotly_chart(fig_ec, use_container_width=True)
@@ -2808,8 +2872,8 @@ elif page == "Topological Sensitivity":
         r"""
         **Question**: At what tariff level does the trade network undergo a **topological phase transition**?
 
-        We systematically apply tariff shocks, reconstruct the filtered simplicial complex,
-        and track how topological invariants change. Key signatures:
+        The platform systematically applies tariff shocks, reconstructs the filtered simplicial complex,
+        and tracks how topological invariants change. Key signatures:
 
         - **$\beta_0$ increasing**: Trade blocs fragmenting (new connected components)
         - **$\beta_1$ appearing**: Circular trade patterns emerging as bilateral links break
@@ -2870,9 +2934,9 @@ elif page == "Topological Sensitivity":
     st.subheader(f"Topological Invariants: {imposing_name_ts} tariffs on {target_name_ts}")
 
     fig_sens_betti = go.Figure()
-    for dim, color, name in [(0, "rgb(55,83,109)", "β₀ (components)"),
-                               (1, "rgb(219,64,82)", "β₁ (cycles)"),
-                               (2, "rgb(44,160,44)", "β₂ (voids)")]:
+    for dim, color, name in [(0, "#1e3a5f", "β₀ (components)"),
+                               (1, "#dc2626", "β₁ (cycles)"),
+                               (2, "#16a34a", "β₂ (voids)")]:
         fig_sens_betti.add_trace(go.Scatter(
             x=sens_df["tariff_pct"], y=sens_df[f"beta_{dim}"],
             mode="lines+markers", name=name,
@@ -2887,7 +2951,7 @@ elif page == "Topological Sensitivity":
     col_l, col_r = st.columns(2)
     with col_l:
         fig_tp_sens = go.Figure()
-        for dim, color in [(0, "rgb(55,83,109)"), (1, "rgb(219,64,82)"), (2, "rgb(44,160,44)")]:
+        for dim, color in [(0, "#1e3a5f"), (1, "#dc2626"), (2, "#16a34a")]:
             fig_tp_sens.add_trace(go.Scatter(
                 x=sens_df["tariff_pct"], y=sens_df[f"total_persistence_{dim}"],
                 mode="lines+markers", name=f"H_{dim}",
@@ -2904,7 +2968,7 @@ elif page == "Topological Sensitivity":
         fig_euler_sens.add_trace(go.Scatter(
             x=sens_df["tariff_pct"], y=sens_df["euler_char"],
             mode="lines+markers",
-            line=dict(color="rgb(148,103,189)", width=3),
+            line=dict(color="#7c3aed", width=3),
         ))
         fig_euler_sens.update_layout(
             height=350, xaxis_title="Tariff (%)", yaxis_title="Euler Characteristic χ",
@@ -2967,7 +3031,13 @@ elif page == "GE Counterfactual Lab":
     **What this does that ACR cannot:** Full general equilibrium with endogenous wages, tariff revenue,
     multi-sector price indices, and optimal tariff computation for *any* country.
     """)
-    st.info("**Why this matters:** This is the most rigorous tool on the platform: a multi-country, multi-sector general equilibrium model (Lashkaripour 2021, JIE) that solves for counterfactual wages, prices, and trade flows simultaneously. Unlike reduced-form approaches, it captures feedback loops — tariff revenue, input-output linkages, and endogenous wage adjustments.")
+    st.markdown(key_insight(
+        "This general equilibrium model solves for counterfactual wages, prices, and trade flows "
+        "simultaneously across all countries and sectors. Unlike reduced-form approaches, it captures "
+        "the feedback loops that determine real-world outcomes — tariff revenue redistribution, "
+        "input-output price propagation, and endogenous wage adjustment.",
+        "General Equilibrium"
+    ), unsafe_allow_html=True)
 
     # ── Dataset & elasticity selection ──
     available = get_available_datasets()
@@ -3091,8 +3161,8 @@ elif page == "GE Counterfactual Lab":
                     geo=dict(showframe=False, showcoastlines=True,
                              projection_type="natural earth",
                              bgcolor="rgba(0,0,0,0)",
-                             landcolor="#111827", oceancolor="#0a0e1a",
-                             coastlinecolor="#2a3550"),
+                             landcolor="#e8e5e0", oceancolor="#eef4fb",
+                             coastlinecolor="#b8b4ae"),
                     height=500, margin=dict(l=0, r=0, t=30, b=0),
                     title=f"Welfare Impact: {imposer} {scenario_type} tariff"
                           + (f" {rate_pct}%" if scenario_type != "free_trade" else "")
@@ -3164,7 +3234,7 @@ elif page == "GE Counterfactual Lab":
             fig_tariff.add_trace(go.Bar(
                 x=[countries[i] for i in order_t[:30]],
                 y=[tariffs[i] for i in order_t[:30]],
-                marker_color="#ef5350",
+                marker_color="#ef4444",
             ))
             fig_tariff.update_layout(
                 title="Nash Optimal Tariffs by Country (Top 30)",
@@ -3179,7 +3249,7 @@ elif page == "GE Counterfactual Lab":
             fig_w.add_trace(go.Bar(
                 x=[countries[i] for i in order_w],
                 y=[welfare[i] for i in order_w],
-                marker_color=[("#66bb6a" if welfare[i] >= 0 else "#ef5350") for i in order_w],
+                marker_color=[("#22c55e" if welfare[i] >= 0 else "#ef4444") for i in order_w],
             ))
             fig_w.update_layout(
                 title="Welfare Under Nash Equilibrium (All Countries)",
@@ -3239,7 +3309,7 @@ elif page == "GE Counterfactual Lab":
             })
             fig_losers = px.bar(bar_df, x="Country", y="Welfare (%)",
                                 color="Welfare (%)",
-                                color_continuous_scale=["#b71c1c", "#ef5350", "#ffffff"],
+                                color_continuous_scale=["#991b1b", "#ef4444", "#fafafa"],
                                 title=f"Countries Most Hurt by {opt_country}'s Optimal Tariff ({opt['optimal_tariff_pct']:.1f}%)")
             fig_losers.update_layout(
                 height=400,
@@ -3280,13 +3350,13 @@ elif page == "GE Counterfactual Lab":
                     name="Optimal Tariff (%)",
                     x=comp_df["Country"],
                     y=comp_df["Optimal Tariff (%)"],
-                    marker_color="#ef5350",
+                    marker_color="#ef4444",
                 ))
                 fig_comp.add_trace(go.Bar(
                     name="Own Welfare (%)",
                     x=comp_df["Country"],
                     y=comp_df["Own Welfare (%)"],
-                    marker_color="#66bb6a",
+                    marker_color="#22c55e",
                 ))
                 fig_comp.update_layout(
                     barmode="group",
@@ -3329,9 +3399,9 @@ elif page == "GE Counterfactual Lab":
 elif page == "Research Lab":
     st.markdown(section_header(
         "Research Lab",
-        "Batch analyses across countries, elasticities, and tariff rates — publishable results"
+        "Systematic analysis across countries, elasticities, and tariff rates"
     ), unsafe_allow_html=True)
-    st.info("**Why this matters:** Individual scenarios tell part of the story. This page runs the GE model systematically — sweeping across all countries, all elasticities, and a range of tariff rates — to identify patterns that no single scenario reveals. The optimal tariff survey and Laffer curves are directly publishable results.")
+    st.info("**Why this matters:** Individual scenarios tell part of the story. This page runs the GE model systematically — sweeping across all countries, all elasticities, and a range of tariff rates — to identify patterns that no single scenario reveals.")
 
     # ── Dataset & elasticity selection (shared with GE Lab) ──
     available_rl = get_available_datasets()
@@ -3395,8 +3465,8 @@ elif page == "Research Lab":
                                   color="Elasticity", hover_data=["Country"],
                                   color_discrete_sequence=CATEGORY_COLORS,
                                   title="Optimal Tariff: Own vs World Welfare")
-            fig_scat.add_hline(y=0, line_dash="dot", line_color="#4a5568")
-            fig_scat.add_vline(x=0, line_dash="dot", line_color="#4a5568")
+            fig_scat.add_hline(y=0, line_dash="dot", line_color="#ddd9d3")
+            fig_scat.add_vline(x=0, line_dash="dot", line_color="#ddd9d3")
             apply_theme(fig_scat)
             st.plotly_chart(fig_scat, use_container_width=True)
 
@@ -3470,7 +3540,7 @@ elif page == "Research Lab":
                 peak = conv_laf.loc[conv_laf["Imposer_Welfare_Pct"].idxmax()]
                 c1, c2, c3 = st.columns(3)
                 c1.markdown(metric_card("Peak Welfare", f"{peak['Imposer_Welfare_Pct']:.3f}%", color="green"), unsafe_allow_html=True)
-                c2.markdown(metric_card("Optimal Rate", f"{peak['Tariff_Rate_Pct']:.0f}%", color="blue"), unsafe_allow_html=True)
+                c2.markdown(metric_card("Optimal Rate", f"{peak['Tariff_Rate_Pct']:.0f}%", color="navy"), unsafe_allow_html=True)
                 c3.markdown(metric_card("World Avg at Peak", f"{peak['World_Avg_Welfare_Pct']:.3f}%",
                             f"{'+' if peak['World_Avg_Welfare_Pct'] >= 0 else ''}{peak['World_Avg_Welfare_Pct']:.3f}%",
                             "green" if peak["World_Avg_Welfare_Pct"] >= 0 else "red"), unsafe_allow_html=True)
@@ -3479,14 +3549,14 @@ elif page == "Research Lab":
             fig_laf.add_trace(go.Scatter(
                 x=conv_laf["Tariff_Rate_Pct"], y=conv_laf["Imposer_Welfare_Pct"],
                 mode="lines+markers", name=f"{laf_country} Welfare",
-                line=dict(color="#64b5f6", width=2.5), marker=dict(size=6),
+                line=dict(color="#b45309", width=2.5), marker=dict(size=6),
             ))
             fig_laf.add_trace(go.Scatter(
                 x=conv_laf["Tariff_Rate_Pct"], y=conv_laf["World_Avg_Welfare_Pct"],
                 mode="lines+markers", name="World Avg",
-                line=dict(color="#ef5350", width=2, dash="dash"), marker=dict(size=5),
+                line=dict(color="#ef4444", width=2, dash="dash"), marker=dict(size=5),
             ))
-            fig_laf.add_hline(y=0, line_dash="dot", line_color="#4a5568")
+            fig_laf.add_hline(y=0, line_dash="dot", line_color="#ddd9d3")
             fig_laf.update_layout(
                 title=f"Tariff Laffer Curve — {laf_country}",
                 xaxis_title="Tariff Rate (%)", yaxis_title="Welfare Change (%)",
@@ -3526,7 +3596,7 @@ elif page == "Research Lab":
                                 color_continuous_scale=WELFARE_COLORSCALE, color_continuous_midpoint=0,
                                 title="Welfare: No Retaliation vs Reciprocal")
             fig_rt.add_trace(go.Scatter(
-                x=[-5, 5], y=[-5, 5], mode="lines", line=dict(dash="dot", color="#4a5568"),
+                x=[-5, 5], y=[-5, 5], mode="lines", line=dict(dash="dot", color="#ddd9d3"),
                 showlegend=False,
             ))
             fig_rt.update_traces(textposition="top center", textfont_size=9, selector=dict(mode="markers+text"))
@@ -3561,20 +3631,21 @@ elif page == "Research Lab":
 
 elif page == "Topology-Counterfactual":
     st.markdown(section_header(
-        "Topology-Counterfactual Bridge",
-        "How does the topology of the global trade network change under tariff regimes? (Novel contribution)"
+        "Topological Policy Analysis",
+        "How does the topology of the global trade network change under alternative tariff regimes?"
     ), unsafe_allow_html=True)
 
     st.markdown("""
-    **No existing paper combines structural trade models with persistent homology on counterfactual networks.**
-    This page answers: when a country imposes tariffs, do trade cycles emerge, collapse, or reorganize?
-    We measure this via Betti numbers (β₀ = components, β₁ = independent cycles) and total H₁ persistence.
+    When a country imposes tariffs, trade flows do not simply shrink — they reorganize. This page
+    applies persistent homology to the counterfactual trade networks predicted by the general
+    equilibrium model, measuring how Betti numbers (β₀ = connected components, β₁ = independent cycles)
+    and total H₁ persistence respond to policy changes.
     """)
     st.info(
-        "**This is the novel contribution.** No existing paper applies persistent homology to counterfactual "
-        "trade networks. Standard TDA-trade papers use observed data — their topology mostly captures GDP and "
-        "geography. By running TDA on GE counterfactual flows, we isolate how *tariff policy* reshapes network "
-        "topology. The topological Laffer curve is a new empirical object."
+        "**Why this matters:** Standard applications of topological data analysis to trade use observed data, "
+        "so their results largely reflect GDP and geographic proximity. By applying persistent homology to "
+        "GE-predicted counterfactual networks, this analysis isolates how *tariff policy itself* reshapes the "
+        "trade network's topological structure — revealing structural phase transitions invisible to conventional methods."
     )
 
     available_tc = get_available_datasets()
@@ -3645,7 +3716,7 @@ elif page == "Topology-Counterfactual":
                     st.markdown(f"**{label} Persistence Diagram**")
                     dgms = tr[dgms_key]
                     fig_pd = go.Figure()
-                    colors_dim = {"0": "#64b5f6", "1": "#ef5350"}
+                    colors_dim = {"0": "#1e3a5f", "1": "#dc2626"}
                     for dim_str, points in dgms.items():
                         births = [p["birth"] for p in points if p["death"] is not None]
                         deaths = [p["death"] for p in points if p["death"] is not None]
@@ -3653,7 +3724,7 @@ elif page == "Topology-Counterfactual":
                             fig_pd.add_trace(go.Scatter(
                                 x=births, y=deaths, mode="markers",
                                 name=f"H{dim_str}", marker=dict(
-                                    color=colors_dim.get(dim_str, "#ffa726"), size=6, opacity=0.7,
+                                    color=colors_dim.get(dim_str, "#1e3a5f"), size=6, opacity=0.7,
                                 ),
                             ))
                     # Diagonal
@@ -3667,7 +3738,7 @@ elif page == "Topology-Counterfactual":
                         mn, mx = min(all_vals), max(all_vals)
                         fig_pd.add_trace(go.Scatter(
                             x=[mn, mx], y=[mn, mx], mode="lines",
-                            line=dict(dash="dot", color="#4a5568"), showlegend=False,
+                            line=dict(dash="dot", color="#ddd9d3"), showlegend=False,
                         ))
                     fig_pd.update_layout(
                         xaxis_title="Birth", yaxis_title="Death",
@@ -3690,8 +3761,9 @@ elif page == "Topology-Counterfactual":
     # ── Tab 2: Topological Laffer Curve ──
     with tc_tab2:
         st.markdown("""
-        **Novel result:** How do Betti numbers and total persistence respond to tariff rate?
-        This is the *topological Laffer curve* — showing how network complexity varies with tariff policy.
+        How do Betti numbers and total persistence respond to tariff rate? The *topological Laffer curve*
+        traces network complexity as a function of tariff policy — revealing rates at which the trade
+        network's structure undergoes qualitative change.
         """)
 
         tl_col1, tl_col2 = st.columns(2)
@@ -3724,12 +3796,12 @@ elif page == "Topology-Counterfactual":
             fig_tl = make_subplots(specs=[[{"secondary_y": True}]])
             fig_tl.add_trace(go.Scatter(
                 x=rates_pct, y=tlr["b1"], mode="lines+markers", name="β₁ (cycles)",
-                line=dict(color="#64b5f6", width=2.5), marker=dict(size=7),
+                line=dict(color="#b45309", width=2.5), marker=dict(size=7),
             ), secondary_y=False)
             fig_tl.add_trace(go.Scatter(
                 x=rates_pct, y=tlr["total_persistence_h1"], mode="lines+markers",
                 name="Total H₁ Persistence",
-                line=dict(color="#ab47bc", width=2.5), marker=dict(size=7),
+                line=dict(color="#a855f7", width=2.5), marker=dict(size=7),
             ), secondary_y=True)
             fig_tl.update_layout(title=f"Topological Laffer Curve — {tl_c}")
             fig_tl.update_xaxes(title_text="Tariff Rate (%)")
@@ -3742,13 +3814,13 @@ elif page == "Topology-Counterfactual":
             fig_tw = go.Figure()
             fig_tw.add_trace(go.Scatter(
                 x=rates_pct, y=tlr["welfare_imposer"], mode="lines+markers",
-                name=f"{tl_c} Welfare", line=dict(color="#66bb6a", width=2.5),
+                name=f"{tl_c} Welfare", line=dict(color="#22c55e", width=2.5),
             ))
             fig_tw.add_trace(go.Scatter(
                 x=rates_pct, y=tlr["welfare_world"], mode="lines+markers",
-                name="World Avg Welfare", line=dict(color="#ef5350", width=2, dash="dash"),
+                name="World Avg Welfare", line=dict(color="#ef4444", width=2, dash="dash"),
             ))
-            fig_tw.add_hline(y=0, line_dash="dot", line_color="#4a5568")
+            fig_tw.add_hline(y=0, line_dash="dot", line_color="#ddd9d3")
             fig_tw.update_layout(
                 title=f"Welfare at Each Tariff Rate — {tl_c}",
                 xaxis_title="Tariff Rate (%)", yaxis_title="Welfare Change (%)",
@@ -3763,22 +3835,23 @@ elif page == "Topology-Counterfactual":
                 **Key finding:** As {tl_c}'s tariff rate rises from 0% to {rates_pct[-1]:.0f}%,
                 β₁ {b1_trend} from {tlr['b1'][0]} to {tlr['b1'][-1]},
                 indicating that the trade network's cycle structure {"becomes more complex" if b1_trend == "increases" else "simplifies"}.
-                This is a novel empirical result — no existing paper tracks how persistent homology
-                responds to counterfactual tariff policy.
+                This traces how persistent homology responds to counterfactual tariff policy —
+                identifying the structural tipping points where the network reorganizes.
                 """)
 
-    with st.expander("Methodology & Novelty"):
+    with st.expander("Methodology"):
         st.markdown("""
         **Pipeline:** GE counterfactual (Lashkaripour 2021) → reconstruct bilateral flows →
-        negative-log distance → Rips filtration → persistent homology (ripser) → Betti numbers.
+        negative-log distance matrix → Vietoris-Rips filtration → persistent homology (ripser) → Betti numbers.
 
-        **What's new:** Standard TDA-trade papers (Topaz 2015, Feng 2019) compute PH on *observed* data.
-        We compute PH on *counterfactual* data — networks that would exist under different tariff regimes
-        but never actually occurred. This lets us answer: "Does protectionism create or destroy trade cycles?"
+        **Approach:** Standard TDA-trade papers (Topaz et al., 2015; Feng et al., 2019) compute persistent
+        homology on *observed* trade data. This analysis instead computes PH on *counterfactual* networks —
+        trade flows that the GE model predicts would exist under alternative tariff regimes but that have
+        never actually occurred. This makes it possible to ask: "Does protectionism create or destroy trade cycles?"
 
-        **Topological Laffer Curve:** Just as the Laffer curve shows welfare as a function of tariff rate,
-        the topological Laffer curve shows β₁ and H₁ persistence as a function of tariff rate —
-        revealing how network complexity responds to trade policy.
+        **Topological Laffer Curve:** Just as the conventional Laffer curve relates welfare to tariff rate,
+        the topological Laffer curve relates β₁ and total H₁ persistence to tariff rate — tracing how
+        network complexity responds to trade policy and identifying structural tipping points.
         """)
 
     st.divider()
@@ -3791,12 +3864,12 @@ elif page == "Topology-Counterfactual":
 # ── Footer ───────────────────────────────────────────────────────────────────
 st.sidebar.divider()
 st.sidebar.markdown("""
-<div style="font-size: 0.72rem; color: #4a5568; line-height: 1.6;">
-    <strong style="color: #7b8fa3;">Data:</strong> BACI, OECD ICIO, WIOD, Gravity, Tau<br>
-    <strong style="color: #7b8fa3;">Methods:</strong> PPML, ACR, GE Counterfactual, Nash, PH, Mapper<br>
-    <strong style="color: #7b8fa3;">Refs:</strong> Lashkaripour (2021), Carlsson (2009), Santos Silva & Tenreyro (2006)<br>
-    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(42, 53, 80, 0.3);">
-        <strong style="color: #64b5f6;">Ian Helfrich, PhD</strong> · Georgia Tech
+<div style="font-size: 0.72rem; color: #9b9ba7; line-height: 1.6;">
+    <strong style="color: #6b6b7b;">Data:</strong> BACI, OECD ICIO, WIOD, Gravity, Tau<br>
+    <strong style="color: #6b6b7b;">Methods:</strong> PPML, ACR, GE Counterfactual, Nash, PH, Mapper<br>
+    <strong style="color: #6b6b7b;">Refs:</strong> Lashkaripour (2021), Carlsson (2009), Santos Silva & Tenreyro (2006)<br>
+    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(221, 217, 211, 0.6);">
+        <strong style="color: #1e3a5f;">Dr. Ian Helfrich</strong> · Georgia Institute of Technology
     </div>
 </div>
 """, unsafe_allow_html=True)
