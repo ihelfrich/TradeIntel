@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large data (loaded separately)
+data/hs_by_dyad/
+*.h5
+*.hdf5
+
+# Secrets
+.env
+secrets.toml
+.streamlit/secrets.toml
+
+# Claude
+.claude/
