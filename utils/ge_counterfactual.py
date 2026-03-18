@@ -24,9 +24,14 @@ References:
 
 import numpy as np
 from scipy.optimize import root
-import h5py
 import os
 import streamlit as st
+
+try:
+    import h5py
+    HAS_H5PY = True
+except ImportError:
+    HAS_H5PY = False
 
 # ============================================================
 #  Constants
@@ -121,6 +126,8 @@ def load_trade_data(dataset: str, year: int, mat_dir: str = MAT_DIR) -> dict:
     if not os.path.isfile(fname):
         raise FileNotFoundError(f"Data file not found: {fname}")
 
+    if not HAS_H5PY:
+        raise ImportError("h5py is required for GE counterfactual analysis but is not installed.")
     with h5py.File(fname, "r") as f:
         data = f["data"]
 

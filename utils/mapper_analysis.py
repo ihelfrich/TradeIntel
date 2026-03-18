@@ -20,8 +20,13 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 import streamlit as st
-import kmapper as km
-from sklearn.cluster import DBSCAN
+
+try:
+    import kmapper as km
+    from sklearn.cluster import DBSCAN
+    HAS_KMAPPER = True
+except ImportError:
+    HAS_KMAPPER = False
 
 from utils.topology import trade_to_distance_matrix
 from utils.data_loader import COUNTRY_COORDS

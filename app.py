@@ -38,32 +38,67 @@ from utils.product_analysis import (
 from utils.welfare import (
     compute_welfare_impact, compute_multi_country_welfare,
 )
-from utils.topology import (
-    trade_to_distance_matrix, compute_persistent_homology,
-    compute_topological_evolution, compute_clique_complex_stats,
-    topological_tariff_sensitivity,
-    compute_attributed_persistent_homology,
-    compute_topological_null_models,
-)
-from utils.mapper_analysis import compute_trade_mapper
-from utils.ge_counterfactual import (
-    load_trade_data, solve_counterfactual, solve_nash_equilibrium,
-    solve_optimal_tariff, get_available_datasets, ELASTICITY_REGISTRY,
-)
 from utils.theme import (
     DARK_THEME, apply_theme, CUSTOM_CSS, WELFARE_COLORSCALE,
     SEQUENTIAL_COLORSCALE, CATEGORY_COLORS, metric_card, section_header,
     data_badge, key_insight, stat_row,
 )
-from utils.research_pipeline import (
-    run_optimal_tariff_survey, run_elasticity_sensitivity,
-    run_tariff_rate_sweep, run_retaliation_comparison,
-)
-from utils.topo_counterfactual import (
-    compare_topology_factual_vs_counterfactual,
-    topological_laffer_curve,
-)
+
+# Heavy C-extension packages: import safely so app loads even if they fail
+try:
+    from utils.topology import (
+        trade_to_distance_matrix, compute_persistent_homology,
+        compute_topological_evolution, compute_clique_complex_stats,
+        topological_tariff_sensitivity,
+        compute_attributed_persistent_homology,
+        compute_topological_null_models,
+    )
+    HAS_TOPOLOGY = True
+except ImportError:
+    HAS_TOPOLOGY = False
+
+try:
+    from utils.mapper_analysis import compute_trade_mapper
+    HAS_MAPPER = True
+except ImportError:
+    HAS_MAPPER = False
+
+try:
+    from utils.ge_counterfactual import (
+        load_trade_data, solve_counterfactual, solve_nash_equilibrium,
+        solve_optimal_tariff, get_available_datasets, ELASTICITY_REGISTRY,
+    )
+    HAS_GE = True
+except ImportError:
+    HAS_GE = False
+
+try:
+    from utils.research_pipeline import (
+        run_optimal_tariff_survey, run_elasticity_sensitivity,
+        run_tariff_rate_sweep, run_retaliation_comparison,
+    )
+    HAS_RESEARCH = True
+except ImportError:
+    HAS_RESEARCH = False
+
+try:
+    from utils.topo_counterfactual import (
+        compare_topology_factual_vs_counterfactual,
+        topological_laffer_curve,
+    )
+    HAS_TOPO_CF = True
+except ImportError:
+    HAS_TOPO_CF = False
 import hashlib
+
+
+def _dependency_warning(module_name: str):
+    """Show a professional notice when an optional dependency is unavailable."""
+    st.warning(
+        f"This analysis requires **{module_name}**, which is not available in "
+        f"the current deployment environment. All other pages remain fully functional.",
+        icon="\u2699\ufe0f",
+    )
 
 # ── Auto-theme: wrap st.plotly_chart so every figure gets the dark theme ──
 _original_plotly_chart = st.plotly_chart
@@ -1964,6 +1999,9 @@ elif page == "Welfare Analysis":
 # PAGE 9: PERSISTENT HOMOLOGY
 # ═════════════════════════════════════════════════════════════════════════════
 elif page == "Persistent Homology":
+    if not HAS_TOPOLOGY:
+        _dependency_warning("ripser / gudhi (topological data analysis)")
+        st.stop()
     st.markdown(section_header("Persistent Homology of the Global Trade Network",
                 "Vietoris-Rips filtration reveals multi-scale topological structure"), unsafe_allow_html=True)
     st.markdown(
@@ -2586,6 +2624,9 @@ elif page == "Statistical Significance":
 # PAGE: MAPPER LENS
 # ═════════════════════════════════════════════════════════════════════════════
 elif page == "Mapper Lens":
+    if not HAS_MAPPER:
+        _dependency_warning("kmapper / scikit-learn")
+        st.stop()
     st.title("Mapper Algorithm — Topological Lens on Trade")
     st.markdown(
         r"""
@@ -2738,6 +2779,9 @@ elif page == "Mapper Lens":
 # PAGE 10: TOPOLOGICAL EVOLUTION
 # ═════════════════════════════════════════════════════════════════════════════
 elif page == "Topological Evolution":
+    if not HAS_TOPOLOGY:
+        _dependency_warning("ripser / gudhi (topological data analysis)")
+        st.stop()
     st.title("Topological Evolution of Global Trade (2002–2022)")
     st.markdown(
         r"""
@@ -2867,6 +2911,9 @@ elif page == "Topological Evolution":
 # PAGE 11: TOPOLOGICAL SENSITIVITY
 # ═════════════════════════════════════════════════════════════════════════════
 elif page == "Topological Sensitivity":
+    if not HAS_TOPOLOGY:
+        _dependency_warning("ripser / gudhi (topological data analysis)")
+        st.stop()
     st.title("Topological Sensitivity to Tariff Shocks")
     st.markdown(
         r"""
@@ -3020,6 +3067,9 @@ elif page == "Topological Sensitivity":
 
 
 elif page == "GE Counterfactual Lab":
+    if not HAS_GE:
+        _dependency_warning("h5py (HDF5 data reader)")
+        st.stop()
     st.markdown(section_header(
         "General Equilibrium Counterfactual Lab",
         "Multi-sector GE model — Lashkaripour (2021, JIE) with extensions"
@@ -3397,6 +3447,9 @@ elif page == "GE Counterfactual Lab":
 
 
 elif page == "Research Lab":
+    if not HAS_RESEARCH:
+        _dependency_warning("h5py (HDF5 data reader)")
+        st.stop()
     st.markdown(section_header(
         "Research Lab",
         "Systematic analysis across countries, elasticities, and tariff rates"
@@ -3630,6 +3683,9 @@ elif page == "Research Lab":
 
 
 elif page == "Topology-Counterfactual":
+    if not HAS_TOPO_CF:
+        _dependency_warning("ripser / gudhi / h5py (topology + GE engine)")
+        st.stop()
     st.markdown(section_header(
         "Topological Policy Analysis",
         "How does the topology of the global trade network change under alternative tariff regimes?"

@@ -23,10 +23,20 @@ References:
 import numpy as np
 import pandas as pd
 import streamlit as st
-import ripser
-import gudhi
-from gudhi.representations import Landscape
 import warnings
+
+try:
+    import ripser
+    HAS_RIPSER = True
+except ImportError:
+    HAS_RIPSER = False
+
+try:
+    import gudhi
+    from gudhi.representations import Landscape
+    HAS_GUDHI = True
+except ImportError:
+    HAS_GUDHI = False
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
